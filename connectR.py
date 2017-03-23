@@ -2,6 +2,28 @@ def board_size():
     x = input("Board Width? ")
     y = input("Board Height? ")
     r = input("Connect? ")
+    return int(x), int(y), int(r)
+
+
+class game:
+    
+    def __init__(self):
+        width, height, connect = board_size()
+        self.board = connectR(width, height, connect)
+        self.player1 = player()
+        self.player2 = player()
+
+
+class player:
+    turn = None
+
+    def __init__(self):
+        self.name = input("Player name? > ")
+
+    def Askturn():
+        x = input("Move? (0-6) > ")
+        return int(x)
+
 
 
 class connectR:
@@ -22,5 +44,7 @@ class connectR:
                 print(self.board[i][j], end = " ")
         print()
 
+game = game()
 
-game = connectR()
+
+
