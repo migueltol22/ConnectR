@@ -17,8 +17,8 @@ class game:
         for i in range(row):
             print()
             for j in range(col):
-                print(self.board[i][j], end=' ')
-            print()
+                print(self.board[i][j])
+            print('')
 
     def askPlayer(self):
         move = int(input("Select a move between 0-{} >".format(self.width - 1)))
@@ -36,7 +36,7 @@ class game:
                 return  
     
     def validMove(self, move):
-        if move < 0 or move >= self.width:
+        if move < 0 or move > self.width:
             return False
         if self.board[move][0] != ' . ':
             return False
@@ -69,6 +69,71 @@ class game:
         return False
 
 
+    def AImove(self, turn):
+        newBoard = self
+        bestMoveScore = 100
+        move = 0
+        oppTurn = ''
+        if turn == ' R ':
+            oppTurn == ' B '
+        else:
+            oppTurn == ' R '
+
+        if self.winner(turn) or self.tie() or self.winner(oppTurn):
+            return None
+
+        for possible in range(self.width):
+            if newBoard.validMove(possible):
+                moveScore = newBoard.maxScore(turn, oppTurn, possible, 2)
+                if (moveScore < bestMoveScore):
+                    bestMoveScore = moveScore
+                    move = possible
+
+        return move 
+
+    def maxScore(self, turn, oppTurn, move, depth):
+        bestMoveScore = -100
+        if depth == 0:
+            return move 
+        if self.winner(turn):
+            return 10
+        elif self.winner(oppTurn):
+            return -10
+        elif self.tie():
+            return 0
+        else:
+            for possible in range(self.width):
+                if self.validMove(possible):
+                    newBoard = self
+                    newBoard.move(turn, possible)
+                    predictedValue = newBoard.minScore(oppTurn, turn, possible, depth - 1)
+                    if predictedValue > bestMoveScore:
+                        bestMoveScore = predictedValue
+        return bestMoveScore
+
+    def minScore(self, turn, oppTurn, move, depth):
+        print(move)
+        bestMoveScore = 100
+        if depth == 0:
+            return move 
+        if self.winner(turn):
+            return 10 
+        elif self.winner(oppTurn):
+            return -10
+        elif self.tie():
+            return 0
+        else:
+            for possible in range(self.width):
+                if self.validMove(possible):
+                    newBoard = self
+                    newBoard.move(turn, possible)
+                    predictedValue = newBoard.minScore(oppTurn, turn, possible, depth - 1)
+                    if predictedValue < bestMoveScore:
+                        bestMoveScore = predictedValue
+        return bestMoveScore    
+
+
+
 
 
 game = game()
@@ -78,9 +143,14 @@ turn = player1
 tie = False
 winner = False
 while not winner and not tie:
-    move = game.askPlayer()
-    game.move(turn, move)
-    winner = game.winner(turn)
+    if turn == player2:
+        move = game.AImove(turn)
+        game.move(turn, move)
+        winner = game.winner(turn)
+    else:
+        move = game.askPlayer()
+        game.move(turn, move)
+        winner = game.winner(turn)
     if turn == player1:
         turn = player2
     else:
